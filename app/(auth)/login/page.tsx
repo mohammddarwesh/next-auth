@@ -18,7 +18,6 @@ export default function LoginPage() {
   // Get callback URL from query params or default to dashboard
   const callbackUrl = searchParams?.get('callbackUrl') || '/dashboard'
   const error = searchParams?.get('error')
-  const prompt = searchParams?.get('prompt')
 
   // Redirect if already authenticated
   useEffect(() => {

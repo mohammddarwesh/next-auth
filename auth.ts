@@ -50,8 +50,9 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       issuer: process.env.AUTH0_ISSUER,
       authorization: {
         params: {
-          scope: 'openid profile email', // Request additional scopes as needed
+          scope: 'openid profile email',
           audience: process.env.AUTH0_AUDIENCE,
+          prompt: 'login', 
         },
       },
     }),
