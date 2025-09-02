@@ -23,20 +23,19 @@ function roleFromIdToken(idToken?: string): string | undefined {
 
 async function refreshAccessToken(token: JWT) {
   try {
-    const url =
-      `${process.env.AUTH0_ISSUER}/oauth/token` +
-      new URLSearchParams({
-        client_id: process.env.AUTH0_CLIENT_ID!,
-        client_secret: process.env.AUTH0_CLIENT_SECRET!,
-        grant_type: 'refresh_token',
-        refresh_token: token.refreshToken as string,
-      })
+    const url = `${process.env.AUTH0_ISSUER}/oauth/token`
 
     const response = await fetch(url, {
       headers: {
         'Content-Type': 'application/x-www-form-urlencoded',
       },
       method: 'POST',
+      body: new URLSearchParams({
+        client_id: process.env.AUTH0_CLIENT_ID!,
+        client_secret: process.env.AUTH0_CLIENT_SECRET!,
+        grant_type: 'refresh_token',
+        refresh_token: String(token.refreshToken || ''),
+      }),
     })
 
     const refreshedTokens = await response.json()
@@ -68,7 +67,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
       issuer: process.env.AUTH0_ISSUER,
       authorization: {
         params: {
-          scope: 'openid profile email',
+          scope: 'openid profile email offline_access',
           audience: process.env.AUTH0_AUDIENCE,
           prompt: 'login', 
         },
@@ -89,6 +88,7 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
           accessToken: account.access_token,
           refreshToken: account.refresh_token,
           accessTokenExpires: account.expires_at ? account.expires_at * 1000 : 0,
+          id: user.id,
           user: {
             id: user.id,
             name: user.name,

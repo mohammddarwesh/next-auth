@@ -9,6 +9,9 @@ export default async function DashboardPage() {
   if (!session) {
     redirect("/login")
   }
+  if (session.user?.role !== 'admin') {
+    redirect('/unauthorized')
+  }
 
   return (
     <div className="space-y-6">
