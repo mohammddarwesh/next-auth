@@ -13,7 +13,7 @@ export default async function DashboardPage() {
   return (
     <div className="space-y-6">
       <div>
-        <h2 className="text-2xl font-bold tracking-tight">Welcome back, {session.user?.name}!</h2>
+        <h2 className="text-2xl font-bold tracking-tight">Welcome back admin, {session.user?.name}!</h2>
         <p className="text-muted-foreground">
           Here's what's happening with your account today.
         </p>

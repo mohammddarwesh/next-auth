@@ -1,52 +1,38 @@
-import { auth } from '@/auth'
-import { NextResponse } from 'next/server'
+import { auth } from "@/auth"
+import { NextResponse } from "next/server"
+
+const adminRoutes = ["/dashboard/admin", "/admin", "/api/admin", "/actions"]
+const userRoutes = ["/dashboard/user", "/store", "/api/user"]
+
+function matchesPath(pathname: string, routes: string[]) {
+  return routes.some((route) => pathname.startsWith(route))
+}
 
 export default auth((req) => {
   const { pathname } = req.nextUrl
-  const session = req.auth
+  const user = req.auth?.user
 
-  // Public routes
-  const publicRoutes = ['/', '/login', '/about']
+  // Block logged-in users from accessing login page
+  if (pathname === "/login" && user) {
+    return NextResponse.redirect(new URL("/", req.url))
+  }
+
+  // Admin protection
+  if (matchesPath(pathname, adminRoutes) && user?.role !== "admin") {
+    return NextResponse.redirect(new URL("/not-found", req.url))
+  }
+
+  // User protection
+  if (matchesPath(pathname, userRoutes) && user?.role !== "user") {
+    return NextResponse.redirect(new URL("/unauthorized", req.url))
+  }
+   // Redirect /dashboard to role-specific dashboard
+   if (pathname === '/dashboard') {
+    const redirectPath = user?.role === 'admin' ? '/dashboard/admin' : '/dashboard/user'
+    return NextResponse.redirect(new URL(redirectPath, req.url))
+  }
   
-  // Allow access to public routes
-  if (publicRoutes.some(route => pathname.startsWith(route))) {
-    return NextResponse.next()
-  }
 
-  // Redirect to login if not authenticated
-  if (!session) {
-    return NextResponse.redirect(new URL('/login', req.url))
-  }
-
-  // Role-based access control
-  const userRole = session.user?.role || 'user'
-  
-  // Define protected routes and required roles
-  const protectedRoutes = {
-    '/dashboard': ['user', 'admin'],
-    '/admin': ['admin'],
-  }
-
-  // Check if the current route is protected
-  const matchedRoute = Object.entries(protectedRoutes).find(([route]) =>
-    pathname.startsWith(route)
-  )
-
-  if (matchedRoute) {
-    const [route, allowedRoles] = matchedRoute
-    const hasAccess = allowedRoles.includes(userRole)
-
-    if (!hasAccess) {
-      return NextResponse.redirect(new URL('/unauthorized', req.url))
-    }
-  }
-
+  // All other routes are public by default
   return NextResponse.next()
 })
-
-// Optionally, don't invoke Middleware on some paths
-export const config = {
-  matcher: [
-    '/((?!api|_next/static|_next/image|favicon.ico|login|error|unauthorized).*)',
-  ],
-}

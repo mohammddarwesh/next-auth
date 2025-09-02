@@ -3,6 +3,24 @@ import NextAuth from "next-auth"
 import Auth0 from "next-auth/providers/auth0"
 import { JWT } from "next-auth/jwt"
 
+// Config from env (requires trailing slash), e.g., https://your-app.com/
+const NS = process.env.AUTH0_NAMESPACE!
+
+// Extract role from ID token (namespaced claim)
+function roleFromIdToken(idToken?: string): string | undefined {
+  if (!idToken || !NS) return undefined
+  try {
+    const seg = idToken.split(".")[1]
+    if (!seg) return undefined
+    const json = Buffer.from(seg.replace(/-/g, "+").replace(/_/g, "/"), "base64").toString()
+    const p = JSON.parse(json) as Record<string, unknown>
+    const claim = (p[`${NS}roles`] as unknown) ?? (p[`${NS}role`] as unknown)
+    if (Array.isArray(claim)) return (claim as string[]).includes("admin") ? "admin" : (claim as string[])[0]
+    if (typeof claim === "string") return claim
+  } catch {}
+  return undefined
+}
+
 async function refreshAccessToken(token: JWT) {
   try {
     const url =
@@ -31,7 +49,7 @@ async function refreshAccessToken(token: JWT) {
       ...token,
       accessToken: refreshedTokens.access_token,
       accessTokenExpires: Date.now() + refreshedTokens.expires_in * 1000,
-      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // Fall back to old refresh token
+      refreshToken: refreshedTokens.refresh_token ?? token.refreshToken, // fallback to existing
     }
   } catch (error) {
     console.error('Error refreshing access token', error)
@@ -58,13 +76,14 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     }),
   ],
   session: {
-    strategy: 'jwt', // Use JWT strategy for session management
+    strategy: 'jwt', // JWT sessions
     maxAge: 30 * 24 * 60 * 60, // 30 days
   },
   callbacks: {
     async jwt({ token, user, account }) {
-      // Initial sign in
+      // Initial sign-in
       if (account && user) {
+        const roleFromClaim = roleFromIdToken(account.id_token as string | undefined)
         return {
           ...token,
           accessToken: account.access_token,
@@ -75,21 +94,21 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
             name: user.name,
             email: user.email,
             image: user.image,
-            role: user.role || 'user', // Default role
+            role: roleFromClaim || user.role || 'user',
           },
         }
       }
 
-      // Return previous token if the access token has not expired
+      // Reuse token if access token is still valid
       if (Date.now() < (token.accessTokenExpires as number)) {
         return token
       }
 
-      // Access token has expired, try to update it
+      // Refresh expired access token
       return refreshAccessToken(token as JWT)
     },
     async session({ session, token }) {
-      // Send properties to the client
+      // Expose extra fields to the client
       if (session.user && token.user) {
         session.user.id = token.user.id
         session.user.role = token.user.role
@@ -100,8 +119,8 @@ export const { handlers, signIn, signOut, auth } = NextAuth({
     },
   },
   pages: {
-    signIn: '/login', // Custom sign-in page
-    error: '/error', // Error page for auth errors
+    signIn: '/login', // custom sign-in page
+    error: '/error', // auth error page
   },
   debug: process.env.NODE_ENV === 'development',
 })
