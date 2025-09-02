@@ -12,8 +12,18 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { LogOut } from "lucide-react"
 
-function UserDropdown({ user }: { user: { name?: string | null; email?: string | null; image?: string | null } }) {
-    const initials = user.name
+interface User {
+  name?: string | null
+  email?: string | null
+  image?: string | null
+  id?: string
+  role?: string
+}
+
+function UserDropdown({ user }: { user: User | undefined | null }) {
+    if (!user) return null;
+    
+    const initials = user?.name
         ?.split(" ")
         .map((n) => n[0])
         .join("")
@@ -32,8 +42,8 @@ function UserDropdown({ user }: { user: { name?: string | null; email?: string |
             <DropdownMenuContent className="w-56" align="end">
                 <DropdownMenuLabel className="font-normal">
                     <div className="flex flex-col space-y-1">
-                        <p className="text-sm font-medium leading-none">{user.name}</p>
-                        {user.email && (
+                        <p className="text-sm font-medium leading-none">{user?.name || 'User'}</p>
+                        {user?.email && (
                             <p className="text-xs leading-none text-muted-foreground">
                                 {user.email}
                             </p>

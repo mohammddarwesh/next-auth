@@ -22,7 +22,13 @@ export default function LoginPage() {
   // Redirect if already authenticated
   useEffect(() => {
     if (status === 'authenticated' && session) {
-      router.push(callbackUrl)
+      // If callbackUrl is provided, use it, otherwise redirect based on role
+      if (callbackUrl && callbackUrl !== '/dashboard') {
+        router.push(callbackUrl)
+      } else {
+        const redirectPath = session.user?.role === 'admin' ? '/dashboard/admin' : '/dashboard/user'
+        router.push(redirectPath)
+      }
     }
   }, [status, session, callbackUrl, router])
 
@@ -33,7 +39,8 @@ export default function LoginPage() {
 
       // Sign in with Auth0
       const result = await signIn('auth0', {
-        callbackUrl,
+        // Always redirect to dashboard, we'll handle the specific path in the middleware
+        callbackUrl: '/dashboard',
         redirect: false,
       })
 
