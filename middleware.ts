@@ -1,8 +1,8 @@
 import { auth } from "@/auth"
 import { NextResponse } from "next/server"
 
-const adminRoutes = ["/dashboard/admin", "/admin", "/api/admin", "/actions"]
-const userRoutes = ["/dashboard/user", "/store", "/api/user"]
+const adminRoutes = ["/dashboard/admin"]
+const userRoutes = ["/dashboard/user"]
 
 function matchesPath(pathname: string, routes: string[]) {
   return routes.some((route) => pathname.startsWith(route))

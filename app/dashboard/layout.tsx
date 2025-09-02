@@ -1,12 +1,6 @@
 import { auth } from "@/auth"
 import { redirect } from "next/navigation"
 
-type UserProps = {
-  name?: string | null
-  email?: string | null
-  image?: string | null
-}
-
 export default async function DashboardLayout({
   children,
 }: {

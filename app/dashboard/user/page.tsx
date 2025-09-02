@@ -95,7 +95,7 @@ export default function UserDashboard() {
             </div>
             <div className="ml-4">
               <p className="text-sm font-medium text-gray-900">Welcome to your new dashboard!</p>
-              <p className="text-sm text-gray-500">We've updated our interface. Let us know what you think!</p>
+              <p className="text-sm text-gray-500">We&apos;ve updated our interface. Let us know what you think!</p>
             </div>
           </div>
         </div>

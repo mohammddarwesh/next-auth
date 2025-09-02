@@ -18,7 +18,7 @@ export default async function DashboardPage() {
       <div>
         <h2 className="text-2xl font-bold tracking-tight">Welcome back admin, {session.user?.name}!</h2>
         <p className="text-muted-foreground">
-          Here's what's happening with your account today.
+          Here&apos;s what&apos;s happening with your account today.
         </p>
       </div>
 

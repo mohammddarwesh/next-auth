@@ -1,18 +1,14 @@
 "use client"
 
-import { useSession, signOut } from "next-auth/react"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
-import { ArrowRight, LoaderCircle, LogOut, User } from "lucide-react"
+import { ArrowRight, LoaderCircle } from "lucide-react"
 import UserDropdown from "./user-dropdown"
+import { useUser } from "@/hooks/useUser"
 
 export function AuthButtons() {
-  const { data: session, status } = useSession()
-  const isLoading = status === "loading"
+  const { user, isLoading } = useUser()
 
-  const handleSignOut = async () => {
-    await signOut({ callbackUrl: '/' })
-  }
 
   if (isLoading) {
     return (
@@ -23,12 +19,7 @@ export function AuthButtons() {
     )
   }
 
-  if (session) {
-    const user = {
-      name: session?.user?.name || null,
-      email: session?.user?.email || null,
-      image: session?.user?.image || null
-    }
+  if (user) {
     return (
       <UserDropdown user={user} />
     )
