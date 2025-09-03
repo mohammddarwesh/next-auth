@@ -101,12 +101,12 @@ docker run -p 3000:3000 next-auth
 
 ## Troubleshooting
 
-| Issue | Solution |
-|-------|----------|
-| Can't switch accounts | Set `prompt: 'login'` in `auth.ts` |
-| No refresh token | Enable "Allow Offline Access" in Auth0 |
-| Admin role not working | Verify role claim in ID token |
-| 401 errors | Check refresh token configuration |
+| Issue                  | Solution                                 |
+|------------------------|------------------------------------------|
+| Can't switch accounts  | Set `prompt: 'login'` in `auth.ts`       |
+| No refresh token       | Enable "Allow Offline Access" in Auth0   |
+| Admin role not working | Verify role claim in ID token            |
+| 401 errors             | Check refresh token configuration        |
 
 ## License
 
@@ -213,12 +213,12 @@ docker run -p 3000:3000 next-auth
 
 ## Sorun Giderme
 
-| Sorun | Çözüm |
-|-------|--------|
-| Hesaplar arası geçiş yapılamıyor | `auth.ts` dosyasında `prompt: 'login'` ayarını yapın |
-| Yenileme token'ı alınamıyor | Auth0'da "Çevrimdışı Erişime İzin Ver" seçeneğini etkinleştirin |
-| Yönetici rolü çalışmıyor | ID token'ındaki rol talebini kontrol edin |
-| 401 hataları | Yenileme tokenı yapılandırmasını kontrol edin |
+| Sorun                            | Çözüm                                                           |
+|----------------------------------|-----------------------------------------------------------------|
+| Hesaplar arası geçiş yapılamıyor | `auth.ts` dosyasında `prompt: 'login'` ayarını yapın            |
+| Yenileme token'ı alınamıyor      | Auth0'da "Çevrimdışı Erişime İzin Ver" seçeneğini etkinleştirin |
+| Yönetici rolü çalışmıyor         | ID token'ındaki rol talebini kontrol edin                       |
+| 401 hataları                     | Yenileme tokenı yapılandırmasını kontrol edin                   |
 
 ## Lisans
 
