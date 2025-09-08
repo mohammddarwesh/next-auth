@@ -1,0 +1,19 @@
+version: "3.8"
+
+services:
+  web:
+    container_name: next-auth-web
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    # Loads variables like NEXTAUTH_URL, NEXTAUTH_SECRET, AUTH0_* from your local file
+    env_file:
+      - .env.local
+    environment:
+      # Ensures production build/runtime inside the container
+      - NODE_ENV=production
+      # Fallback if not set in .env.local
+      - NEXTAUTH_URL=http://localhost:3000
+    restart: unless-stopped
