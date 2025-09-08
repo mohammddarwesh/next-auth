@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - NODE_ENV=production
+      # Add your Auth0 environment variables here
+      # - AUTH0_CLIENT_ID=
+      # - AUTH0_CLIENT_SECRET=
+      # - AUTH0_ISSUER=
+      # - NEXTAUTH_URL=
+      # - NEXTAUTH_SECRET=
+    restart: unless-stopped
+    # Uncomment if you need volumes for persistent data
+    # volumes:
+    #   - ./data:/app/data
